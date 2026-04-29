@@ -1,1 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MissLess Bot — Never Miss A Trade Again</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--black:#060606;--dark:#0c0c0c;--card:#131313;--border:#1e1e1e;--green:#00ff88;--green2:#00cc6a;--red:#ff3b3b;--white:#f0f0f0;--muted:#555;--gold:#ffd700}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--white);font-family:'DM Sans',sans-serif;overflow-x:hidden}
 
+/* NAV */
+nav{position:fixed;top:0;width:100%;z-index:999;padding:18px 48px;display:flex;align-items:center;justify-content:space-between;background:rgba(6,6,6,0.9);backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:4px;color:var(--white);text-decoration:none}
+.logo span{color:var(--green)}
+.nav-links{display:flex;align-items:center;gap:32px}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--white)}
+.nav-btn{background:var(--green)!important;color:var(--black)!important;padding:9px 22px!important;border-radius:3px;font-weight:700!important}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;padding:140px 48px 80px;position:relative;overflow:hidden}
+.hero-glow{position:absolute;right:0;top:0;width:60%;height:100%;background:radial-gradient(ellipse 50% 60% at 80% 50%,rgba(0,255,136,0.07) 0%,transparent 70%);pointer-events:none}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);background-size:48px 48px;pointer-events:none}
+.hero-content{position:relative;z-index:2;max-width:680px}
+.live-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,255,136,0.07);border:1px solid rgba(0,255,136,0.18);border-radius:100px;padding:7px 18px;font-size:11px;color:var(--green);font-family:'JetBrains Mono',monospace;letter-spacing:1px;margin-bottom:36px;animation:fadeup .5s ease both}
+.dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(72px,11vw,128px);line-height:.92;letter-spacing:2px;animation:fadeup .5s .1s ease both}
+.hero h1 .g{color:var(--green)}
+.hero h1 .o{-webkit-text-stroke:1.5px rgba(255,255,255,0.2);color:transparent}
+.hero-p{font-size:17px;color:#888;line-height:1.65;margin:28px 0 40px;max-width:500px;font-weight:300;animation:fadeup .5s .2s ease both}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;animation:fadeup .5s .3s ease both}
+.btn-g{background:var(--green);color:var(--black);padding:15px 34px;font-size:14px;font-weight:700;border:none;border-radius:3px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s;letter-spacing:.5px}
+.btn-g:hover{background:var(--green2);transform:translateY(-2px)}
+.btn-o{background:transparent;color:var(--white);padding:15px 34px;font-size:14px;font-weight:500;border:1px solid var(--border);border-radius:3px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s}
+.btn-o:hover{border-color:rgba(0,255,136,0.4);color:var(--green)}
+.hero-nums{display:flex;gap:48px;margin-top:60px;animation:fadeup .5s .4s ease both}
+.num-val{font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--green);letter-spacing:1px;line-height:1}
+.num-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-top:4px}
+.hero-mock{position:absolute;right:48px;top:50%;transform:translateY(-50%);width:400px;animation:fadeup .7s .3s ease both}
+.mock-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 32px 64px rgba(0,0,0,.7),0 0 0 1px rgba(0,255,136,0.04)}
+.mock-top{background:#111;padding:11px 14px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)}
+.d{width:9px;height:9px;border-radius:50%}
+.dr{background:#ff5f57}.dy{background:#ffbd2e}.dg{background:#28c840}
+.mock-ttl{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-left:8px}
+.mock-live{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);display:flex;align-items:center;gap:5px}
+.mock-body{padding:16px}
+.row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.row:last-of-type{border-bottom:none}
+.pair{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:#58a6ff}
+.price{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700}
+.up{color:var(--green)}.dn{color:var(--red)}
+.tag{font-size:9px;padding:2px 7px;border-radius:100px;font-family:'JetBrains Mono',monospace;background:rgba(0,255,136,0.09);color:var(--green);border:1px solid rgba(0,255,136,0.18)}
+.alert-box{background:rgba(0,255,136,0.06);border:1px solid rgba(0,255,136,0.16);border-radius:6px;padding:10px 12px;margin-top:14px;display:flex;align-items:center;gap:10px}
+.alert-box span{font-size:16px}
+.alert-txt{font-size:11px;color:var(--green);font-family:'JetBrains Mono',monospace;line-height:1.4}
+.alert-txt strong{display:block;font-size:12px}
+
+/* TICKER */
+.ticker{background:var(--dark);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:11px 0;overflow:hidden;white-space:nowrap}
+.tick-inner{display:inline-flex;gap:40px;animation:tick 25s linear infinite}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tick-item{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:7px}
+
+/* SECTIONS */
+section{padding:96px 48px}
+.s-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--green);text-transform:uppercase;letter-spacing:3px;margin-bottom:14px}
+.s-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(42px,6vw,76px);line-height:.95;letter-spacing:1px;margin-bottom:18px}
+.s-sub{font-size:15px;color:#777;line-height:1.7;max-width:520px;font-weight:300}
+
+/* HOW */
+.how{background:var(--dark);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin-top:56px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.h-card{background:var(--dark);padding:44px 32px;position:relative}
+.h-n{font-family:'Bebas Neue',sans-serif;font-size:72px;color:rgba(0,255,136,0.05);position:absolute;top:16px;right:20px;line-height:1}
+.h-icon{width:44px;height:44px;background:rgba(0,255,136,0.07);border:1px solid rgba(0,255,136,0.12);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:20px}
+.h-card h3{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;margin-bottom:10px}
+.h-card p{font-size:13px;color:#666;line-height:1.7}
+
+/* MARKETS */
+.m-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:52px}
+.m-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:18px;text-align:center;transition:all .2s;cursor:default}
+.m-card:hover{border-color:rgba(0,255,136,0.25);transform:translateY(-3px)}
+.m-icon{font-size:26px;margin-bottom:8px}
+.m-name{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;margin-bottom:3px}
+.m-sub{font-size:10px;color:var(--muted)}
+
+/* TESTIMONIALS */
+.testi{background:var(--dark);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.t-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:52px}
+.t-card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:all .25s}
+.t-card:hover{border-color:rgba(0,255,136,0.2);transform:translateY(-3px)}
+.t-vid{aspect-ratio:16/9;background:linear-gradient(135deg,#111 0%,#0e1a12 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;position:relative}
+.play{width:52px;height:52px;background:rgba(0,255,136,0.12);border:2px solid rgba(0,255,136,0.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px}
+.vid-lbl{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.t-body{padding:18px}
+.stars{color:var(--gold);font-size:11px;margin-bottom:8px}
+.t-quote{font-size:12px;color:#888;line-height:1.6;margin-bottom:14px;font-style:italic}
+.t-author{display:flex;align-items:center;gap:9px}
+.avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--green),#0099ff);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--black);font-family:'Bebas Neue',sans-serif;flex-shrink:0}
+.a-name{font-size:12px;font-weight:600}
+.a-loc{font-size:10px;color:var(--muted)}
+.cs-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,0.07);border:1px solid rgba(255,215,0,0.18);border-radius:100px;padding:5px 14px;font-size:10px;color:var(--gold);font-family:'JetBrains Mono',monospace;margin-bottom:18px}
+
+/* PRICING */
+.p-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:52px;align-items:start}
+.p-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:32px;position:relative;transition:all .25s}
+.p-card:hover{transform:translateY(-4px)}
+.p-card.feat{border-color:var(--green);background:rgba(0,255,136,0.02)}
+.p-card.feat::before{content:'MOST POPULAR';position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--green);color:var(--black);font-size:9px;font-weight:700;padding:3px 14px;border-radius:100px;letter-spacing:1.5px;font-family:'JetBrains Mono',monospace;white-space:nowrap}
+.p-name{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--muted);margin-bottom:6px}
+.p-price{font-family:'Bebas Neue',sans-serif;font-size:52px;line-height:1;margin-bottom:4px}
+.p-price sup{font-size:22px;vertical-align:super}
+.p-per{font-size:12px;color:var(--muted);margin-bottom:8px}
+.p-trial{font-size:11px;color:var(--green);font-family:'JetBrains Mono',monospace;margin-bottom:24px;display:block}
+.p-feats{list-style:none;margin-bottom:28px}
+.p-feats li{display:flex;align-items:center;gap:8px;font-size:12px;color:#999;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
+.p-feats li:last-child{border-bottom:none}
+.ck{color:var(--green);font-weight:700}
+.xx{color:#333}
+.p-btn{width:100%;padding:13px;font-size:13px;font-weight:700;border-radius:6px;border:none;cursor:pointer;transition:all .2s;letter-spacing:.5px;text-decoration:none;display:block;text-align:center;font-family:'DM Sans',sans-serif}
+.p-btn.g{background:var(--green);color:var(--black)}
+.p-btn.g:hover{background:var(--green2)}
+.p-btn.w{background:transparent;color:var(--white);border:1px solid var(--border)}
+.p-btn.w:hover{border-color:rgba(0,255,136,0.3);color:var(--green)}
+
+/* PAYMENT */
+.pay{background:var(--dark);border-top:1px solid var(--border);border-bottom:1px solid var(--border);text-align:center}
+.pay-methods{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:44px}
+.pay-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:22px 28px;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:130px;transition:all .2s}
+.pay-card:hover{border-color:rgba(0,255,136,0.25);transform:translateY(-3px)}
+.pay-icon{font-size:28px}
+.pay-name{font-size:12px;font-weight:600}
+.pay-sub{font-size:10px;color:var(--muted)}
+
+/* AFFILIATE */
+.aff{position:relative;overflow:hidden}
+.aff-bg{position:absolute;inset:0;background:radial-gradient(ellipse 40% 60% at 50% 50%,rgba(0,255,136,0.03) 0%,transparent 70%);pointer-events:none}
+.aff-inner{position:relative;z-index:2;text-align:center;max-width:720px;margin:0 auto}
+.aff-box{background:var(--card);border:1px solid rgba(0,255,136,0.15);border-radius:14px;padding:44px;margin-top:44px}
+.aff-nums{display:flex;justify-content:center;gap:56px;margin-bottom:36px;flex-wrap:wrap}
+.aff-num{text-align:center}
+.aff-val{font-family:'Bebas Neue',sans-serif;font-size:56px;color:var(--green);line-height:1}
+.aff-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;margin-top:4px}
+.aff-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;text-align:left}
+.aff-step{display:flex;gap:14px}
+.step-n{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--green);line-height:1;flex-shrink:0}
+.step-h{font-size:14px;font-weight:600;margin-bottom:5px}
+.step-p{font-size:12px;color:var(--muted);line-height:1.6}
+
+/* CTA */
+.cta-sec{background:var(--dark);border-top:1px solid var(--border);text-align:center;padding:120px 48px}
+.cta-sec .s-title{font-size:clamp(52px,9vw,100px)}
+
+/* FOOTER */
+footer{background:var(--black);border-top:1px solid var(--border);padding:36px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.f-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:4px}
+.f-logo span{color:var(--green)}
+.f-copy{font-size:11px;color:var(--muted)}
+.f-links{display:flex;gap:20px}
+.f-links a{font-size:11px;color:var(--muted);text-decoration:none;transition:color .2s}
+.f-links a:hover{color:var(--green)}
+
+/* ANIM */
+@keyframes fadeup{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.fi{opacity:0;transform:translateY(28px);transition:opacity .6s ease,transform .6s ease}
+.fi.vis{opacity:1;transform:translateY(0)}
+
+/* RESPONSIVE */
+@media(max-width:880px){
+nav{padding:14px 20px}
+.nav-links{display:none}
+.hero{padding:100px 20px 60px}
+.hero-mock{display:none}
+section{padding:60px 20px}
+.how-grid{grid-template-columns:1fr}
+.t-grid{grid-template-columns:1fr}
+.p-grid{grid-template-columns:1fr}
+.aff-steps{grid-template-columns:1fr}
+footer{flex-direction:column;text-align:center}
+.hero-nums{gap:20px}
+.m-grid{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+
+<nav>
+<a href="#" class="logo">MISS<span>LESS</span> BOT</a>
+<div class="nav-links">
+<a href="#how">How It Works</a>
+<a href="#markets">Markets</a>
+<a href="#reviews">Reviews</a>
+<a href="#pricing">Pricing</a>
+<a href="#earn">Earn</a>
+<a href="#pricing" class="nav-btn">Start Free Trial</a>
+</div>
+</nav>
+
+<section class="hero">
+<div class="hero-glow"></div>
+<div class="hero-grid"></div>
+<div class="hero-content">
+<div class="live-badge"><span class="dot"></span>LIVE MONITORING — 24/7 ACTIVE</div>
+<h1>NEVER<br><span class="g">MISS</span><br><span class="o">A TRADE</span></h1>
+<p class="hero-p">Your phone rings the moment price hits your target. Not a notification. Not a beep. A real phone call — day or night, silent mode or not.</p>
+<div class="hero-btns">
+<a href="#pricing" class="btn-g">▶ Start 7-Day Free Trial</a>
+<a href="#how" class="btn-o">How It Works →</a>
+</div>
+<div class="hero-nums">
+<div><div class="num-val">24/7</div><div class="num-lbl">Monitoring</div></div>
+<div><div class="num-val">20+</div><div class="num-lbl">Trading Pairs</div></div>
+<div><div class="num-val">&lt;3s</div><div class="num-lbl">Alert Speed</div></div>
+</div>
+</div>
+<div class="hero-mock">
+<div class="mock-wrap">
+<div class="mock-top">
+<div class="d dr"></div><div class="d dy"></div><div class="d dg"></div>
+<span class="mock-ttl">misslessbot — dashboard</span>
+<div class="mock-live"><span class="dot"></span>LIVE</div>
+</div>
+<div class="mock-body">
+<div class="row"><span class="pair">XAU/USD</span><span class="price up">▲ 3,241.50</span><span class="tag">ACTIVE</span></div>
+<div class="row"><span class="pair">EUR/USD</span><span class="price up">▲ 1.08420</span><span class="tag">ACTIVE</span></div>
+<div class="row"><span class="pair">BTC/USD</span><span class="price dn">▼ 93,241</span><span class="tag">ACTIVE</span></div>
+<div class="row"><span class="pair">NAS100</span><span class="price up">▲ 19,842</span><span class="tag">ACTIVE</span></div>
+<div class="alert-box">
+<span>📞</span>
+<div class="alert-txt"><strong>ALERT TRIGGERED</strong>XAU/USD hit 3,240 — Calling now</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<div class="ticker">
+<div class="tick-inner">
+<span class="tick-item">XAU/USD <span class="up">▲ 3,241.50</span></span>
+<span class="tick-item">EUR/USD <span class="up">▲ 1.08420</span></span>
+<span class="tick-item">GBP/USD <span class="dn">▼ 1.26810</span></span>
+<span class="tick-item">BTC/USD <span class="up">▲ 93,241</span></span>
+<span class="tick-item">ETH/USD <span class="up">▲ 3,180</span></span>
+<span class="tick-item">NAS100 <span class="up">▲ 19,842</span></span>
+<span class="tick-item">US30 <span class="dn">▼ 38,920</span></span>
+<span class="tick-item">XAG/USD <span class="up">▲ 32.41</span></span>
+<span class="tick-item">OIL/USD <span class="up">▲ 79.40</span></span>
+<span class="tick-item">GER40 <span class="up">▲ 18,210</span></span>
+<span class="tick-item">XAU/USD <span class="up">▲ 3,241.50</span></span>
+<span class="tick-item">EUR/USD <span class="up">▲ 1.08420</span></span>
+<span class="tick-item">GBP/USD <span class="dn">▼ 1.26810</span></span>
+<span class="tick-item">BTC/USD <span class="up">▲ 93,241</span></span>
+<span class="tick-item">ETH/USD <span class="up">▲ 3,180</span></span>
+<span class="tick-item">NAS100 <span class="up">▲ 19,842</span></span>
+<span class="tick-item">US30 <span class="dn">▼ 38,920</span></span>
+<span class="tick-item">XAG/USD <span class="up">▲ 32.41</span></span>
+<span class="tick-item">OIL/USD <span class="up">▲ 79.40</span></span>
+<span class="tick-item">GER40 <span class="up">▲ 18,210</span></span>
+</div>
+</div>
+
+<section class="how" id="how">
+<div class="s-label">HOW IT WORKS</div>
+<div class="s-title">THREE STEPS.<br>ZERO MISSED TRADES.</div>
+<div class="how-grid fi">
+<div class="h-card">
+<div class="h-n">01</div>
+<div class="h-icon">🎯</div>
+<h3>Set Your Alert</h3>
+<p>Log in. Pick your instrument. Set your target price and direction. Done in 30 seconds.</p>
+</div>
+<div class="h-card">
+<div class="h-n">02</div>
+<div class="h-icon">👁️</div>
+<h3>We Watch 24/7</h3>
+<p>MissLess Bot monitors live prices around the clock. While you sleep — we never blink.</p>
+</div>
+<div class="h-card">
+<div class="h-n">03</div>
+<div class="h-icon">📞</div>
+<h3>Your Phone Rings</h3>
+<p>Price hits your level. Your phone rings. A real call you cannot ignore — not a notification.</p>
+</div>
+</div>
+</section>
+
+<section id="markets">
+<div class="s-label">MARKETS COVERED</div>
+<div class="s-title">EVERY MARKET.<br>ONE SYSTEM.</div>
+<div class="m-grid fi">
+<div class="m-card"><div class="m-icon">🥇</div><div class="m-name">XAU/USD</div><div class="m-sub">Gold</div></div>
+<div class="m-card"><div class="m-icon">🥈</div><div class="m-name">XAG/USD</div><div class="m-sub">Silver</div></div>
+<div class="m-card"><div class="m-icon">💶</div><div class="m-name">EUR/USD</div><div class="m-sub">Forex</div></div>
+<div class="m-card"><div class="m-icon">💷</div><div class="m-name">GBP/USD</div><div class="m-sub">Forex</div></div>
+<div class="m-card"><div class="m-icon">💴</div><div class="m-name">USD/JPY</div><div class="m-sub">Forex</div></div>
+<div class="m-card"><div class="m-icon">₿</div><div class="m-name">BTC/USD</div><div class="m-sub">Crypto</div></div>
+<div class="m-card"><div class="m-icon">💎</div><div class="m-name">ETH/USD</div><div class="m-sub">Crypto</div></div>
+<div class="m-card"><div class="m-icon">📈</div><div class="m-name">NAS100</div><div class="m-sub">Indices</div></div>
+<div class="m-card"><div class="m-icon">🏭</div><div class="m-name">US30</div><div class="m-sub">Indices</div></div>
+<div class="m-card"><div class="m-icon">🛢️</div><div class="m-name">OIL/USD</div><div class="m-sub">Commodities</div></div>
+</div>
+</section>
+
+<section class="testi" id="reviews">
+<div class="s-label">TRADER REVIEWS</div>
+<div class="s-title">REAL TRADERS.<br>REAL RESULTS.</div>
+<div class="cs-badge">⏳ VIDEO TESTIMONIALS — EARLY ACCESS PHASE</div>
+<div class="t-grid fi">
+<div class="t-card">
+<div class="t-vid"><div class="play">▶</div><div class="vid-lbl">🇺🇸 Houston, Texas</div></div>
+<div class="t-body">
+<div class="stars">★★★★★</div>
+<p class="t-quote">"Phone rang at 3AM. I caught a 200 pip move on Gold. This system paid for itself in one trade."</p>
+<div class="t-author"><div class="avatar">MK</div><div><div class="a-name">Marcus K.</div><div class="a-loc">🇺🇸 Houston, TX — Forex Trader</div></div></div>
+</div>
+</div>
+<div class="t-card">
+<div class="t-vid"><div class="play">▶</div><div class="vid-lbl">🇬🇧 London, UK</div></div>
+<div class="t-body">
+<div class="stars">★★★★★</div>
+<p class="t-quote">"MT5 notifications never woke me up. This actually calls me. Game changer for night sessions."</p>
+<div class="t-author"><div class="avatar">SJ</div><div><div class="a-name">Sarah J.</div><div class="a-loc">🇬🇧 London, UK — Prop Trader</div></div></div>
+</div>
+</div>
+<div class="t-card">
+<div class="t-vid"><div class="play">▶</div><div class="vid-lbl">🇳🇬 Lagos, Nigeria</div></div>
+<div class="t-body">
+<div class="stars">★★★★★</div>
+<p class="t-quote">"I set my levels and live my life. The call system gives me freedom I never had as a trader."</p>
+<div class="t-author"><div class="avatar">AO</div><div><div class="a-name">Adebayo O.</div><div class="a-loc">🇳🇬 Lagos, Nigeria — Day Trader</div></div></div>
+</div>
+</div>
+</div>
+</section>
+
+<section id="pricing">
+<div class="s-label">PRICING PLANS</div>
+<div class="s-title">START FREE.<br>SCALE WHEN READY.</div>
+<p class="s-sub">Every plan includes a 7-day free trial. No credit card required to start.</p>
+<div class="p-grid fi">
+<div class="p-card">
+<div class="p-name">BASIC</div>
+<div class="p-price"><sup>$</sup>9.99</div>
+<div class="p-per">per month</div>
+<span class="p-trial">✓ 7-day free trial</span>
+<ul class="p-feats">
+<li><span class="ck">✓</span> 3 active alerts</li>
+<li><span class="ck">✓</span> Major forex pairs</li>
+<li><span class="ck">✓</span> Phone call alerts</li>
+<li><span class="ck">✓</span> Web dashboard</li>
+<li><span class="xx">✗</span> Gold &amp; Silver</li>
+<li><span class="xx">✗</span> Crypto &amp; Indices</li>
+</ul>
+<a href="mailto:calebofficial2003@gmail.com?subject=MissLess Bot - Basic Plan" class="p-btn w">Get Started Free</a>
+</div>
+<div class="p-card feat">
+<div class="p-name">PRO</div>
+<div class="p-price"><sup>$</sup>19.99</div>
+<div class="p-per">per month</div>
+<span class="p-trial">✓ 7-day free trial</span>
+<ul class="p-feats">
+<li><span class="ck">✓</span> Unlimited alerts</li>
+<li><span class="ck">✓</span> ALL trading pairs</li>
+<li><span class="ck">✓</span> Gold, Silver, Crypto</li>
+<li><span class="ck">✓</span> Indices &amp; Oil</li>
+<li><span class="ck">✓</span> Phone call alerts</li>
+<li><span class="ck">✓</span> Priority monitoring</li>
+</ul>
+<a href="mailto:calebofficial2003@gmail.com?subject=MissLess Bot - Pro Plan" class="p-btn g">Get Started Free</a>
+</div>
+<div class="p-card">
+<div class="p-name">ELITE</div>
+<div class="p-price"><sup>$</sup>49.99</div>
+<div class="p-per">per month</div>
+<span class="p-trial">✓ 7-day free trial</span>
+<ul class="p-feats">
+<li><span class="ck">✓</span> Everything in Pro</li>
+<li><span class="ck">✓</span> Unlimited calls</li>
+<li><span class="ck">✓</span> Multiple numbers</li>
+<li><span class="ck">✓</span> Custom voice messages</li>
+<li><span class="ck">✓</span> Priority support</li>
+<li><span class="ck">✓</span> Early access features</li>
+</ul>
+<a href="mailto:calebofficial2003@gmail.com?subject=MissLess Bot - Elite Plan" class="p-btn w">Get Started Free</a>
+</div>
+</div>
+</section>
+
+<section class="pay">
+<div class="s-label">PAYMENT OPTIONS</div>
+<div class="s-title">PAY YOUR WAY.</div>
+<p class="s-sub" style="margin:0 auto">We accept multiple payment methods so traders worldwide can access MissLess Bot.</p>
+<div class="pay-methods fi">
+<div class="pay-card"><div class="pay-icon">💚</div><div class="pay-name">OPay</div><div class="pay-sub">Nigeria &amp; Africa</div></div>
+<div class="pay-card"><div class="pay-icon">💸</div><div class="pay-name">CashApp</div><div class="pay-sub">United States</div></div>
+<div class="pay-card"><div class="pay-icon">₿</div><div class="pay-name">Crypto</div><div class="pay-sub">USDT · BTC · ETH</div></div>
+<div class="pay-card"><div class="pay-icon">✉️</div><div class="pay-name">Contact Us</div><div class="pay-sub">Other methods</div></div>
+</div>
+</section>
+
+<section class="aff" id="earn">
+<div class="aff-bg"></div>
+<div class="aff-inner">
+<div class="s-label">AFFILIATE PROGRAM</div>
+<div class="s-title">EARN WHILE<br>TRADERS WIN.</div>
+<p class="s-sub" style="margin:0 auto 0">Share MissLess Bot. Earn 30% recurring commission every month they stay subscribed.</p>
+<div class="aff-box fi">
+<div class="aff-nums">
+<div class="aff-num"><div class="aff-val">30%</div><div class="aff-lbl">Commission</div></div>
+<div class="aff-num"><div class="aff-val">∞</div><div class="aff-lbl">No Cap</div></div>
+<div class="aff-num"><div class="aff-val">♾️</div><div class="aff-lbl">Recurring</div></div>
+</div>
+<div class="aff-steps">
+<div class="aff-step"><div class="step-n">01</div><div><div class="step-h">Sign Up Free</div><p class="step-p">Register as affiliate. Get your unique referral link instantly.</p></div></div>
+<div class="aff-step"><div class="step-n">02</div><div><div class="step-h">Share Your Link</div><p class="step-p">Post on TikTok, Telegram, WhatsApp, Twitter. Anywhere traders are.</p></div></div>
+<div class="aff-step"><div class="step-n">03</div><div><div class="step-h">Earn Every Month</div><p class="step-p">Get 30% of every payment for as long as they stay subscribed.</p></div></div>
+</div>
+<div style="text-align:center;margin-top:32px">
+<a href="mailto:calebofficial2003@gmail.com?subject=MissLess Bot Affiliate Program" class="btn-g">Join Affiliate Program →</a>
+</div>
+</div>
+</div>
+</section>
+
+<section class="cta-sec">
+<div class="s-label">GET STARTED TODAY</div>
+<div class="s-title">STOP MISSING.<br><span style="color:var(--green)">START WINNING.</span></div>
+<p style="color:#666;font-size:15px;margin:18px 0 36px;font-weight:300">7 days free. No credit card. Cancel anytime.</p>
+<a href="mailto:calebofficial2003@gmail.com?subject=MissLess Bot - Free Trial" class="btn-g" style="font-size:16px;padding:18px 44px">▶ Start Your Free Trial Now</a>
+</section>
+
+<footer>
+<div class="f-logo">MISS<span>LESS</span> BOT</div>
+<div class="f-copy">© 2026 MissLess Bot. All rights reserved.</div>
+<div class="f-links">
+<a href="mailto:calebofficial2003@gmail.com">Contact</a>
+<a href="#">Privacy</a>
+<a href="#">Terms</a>
+<a href="#earn">Affiliate</a>
+</div>
+</footer>
+
+<script>
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis')})},{threshold:.08});
+document.querySelectorAll('.fi').forEach(el=>obs.observe(el));
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth'})})});
+</script>
+</body>
+</html>
